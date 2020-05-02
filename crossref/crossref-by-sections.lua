@@ -54,9 +54,8 @@ function resolve_label(elem, t)
   return resolve_label_(elem, t, "ref")
 end
 
-function header(elem)
-  if elem.level == 1 then
-    print("h")
+function increment_sec_and_reset_cnt(elem)
+  if (elem.t == "Header") and (elem.level == 1) then
     sec = sec + 1
     for key, value in pairs(cnt) do
       cnt[key] = 0
@@ -69,7 +68,6 @@ function str(elem)
   for key, value in pairs(idx) do
     res = resolve_label(elem, key)
     if res then
-      print("s")
       return (res)
     end
   end
@@ -78,10 +76,7 @@ end
 function Pandoc(doc)
   local hblocks = {}
   for i,el in pairs(doc.blocks) do
-    if (el.t == "Header") then
-      header(el)
-    end
-
+    increment_sec_and_reset_cnt(el)
     table.insert(hblocks, pandoc.walk_block(el, {Str = str}))
   end
   return pandoc.Pandoc(hblocks, doc.meta)
