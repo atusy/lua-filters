@@ -1,9 +1,12 @@
-lab = {fig = "Fig. ", tab = "Tab. "}
-cnt = {fig = 0, tab = 0}
-idx = {}
-idx["fig"] = {}
-idx["tab"] = {}
 sec = 0
+lab = {fig = "Fig. ", tab = "Tab. "}
+
+cnt = {}
+idx = {}
+for key,value in pairs(lab) do
+  cnt[key] = 0
+  idx[key] = {}
+end
 
 function pattern_hash(t)
   return "((.*)%(#" .. t .. ":([%a%d-]+)%)(.*))"
@@ -55,7 +58,7 @@ function resolve_label(elem, t)
 end
 
 function increment_sec_and_reset_cnt(elem)
-  if (elem.t == "Header") and (elem.level == 1) then
+  if sec and (elem.t == "Header") and (elem.level == 1) then
     sec = sec + 1
     for key, value in pairs(cnt) do
       cnt[key] = 0
