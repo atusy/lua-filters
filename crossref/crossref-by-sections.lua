@@ -1,12 +1,13 @@
+-- if sec is 0, then reference numbers reset by sections
+-- if sec is nil, then reference numbers increments throughout the document
 sec = 0
+--sec = nil
 lab = {fig = "Fig. ", tab = "Tab. "}
 
+
+-- Initialize counts and index
 cnt = {}
 idx = {}
-for key,value in pairs(lab) do
-  cnt[key] = 0
-  idx[key] = {}
-end
 
 function pattern_hash(t)
   return "((.*)%(#" .. t .. ":([%a%d-]+)%)(.*))"
@@ -29,7 +30,11 @@ function resolve_label_(elem, t, p)
     local id = t .. "-" .. key
     if not idx[t][key] then
       cnt[t] = cnt[t] + 1
-      idx[t][key] = sec .. "." .. cnt[t]
+      if sec then
+        idx[t][key] = sec .. "." .. cnt[t]
+      else
+        idx[t][key] = cnt[t] .. ""
+      end
     end
     
     if p == "hash" then
@@ -73,6 +78,18 @@ function str(elem)
     if res then
       return (res)
     end
+  end
+end
+
+function Meta(meta)
+  if meta.crossref then
+    for key,value in pairs(meta.crossref) do
+      lab[key] = pandoc.utils.stringify(value)
+    end
+  end
+  for key,value in pairs(lab) do
+    cnt[key] = 0
+    idx[key] = {}
   end
 end
 
