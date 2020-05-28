@@ -95,7 +95,7 @@ function Str(element)
             
             element.text = element.text:gsub(
                 matched:gsub("([()-])", "%%%1"), -- escaping
-                hyperlink(ref, type .. "-" .. name)
+                hyperlink(ref, "#" .. type .. "-" .. name)
             )
         end
         if link then
