@@ -1,4 +1,4 @@
-section = nil
+section = 0
 link = false -- cannot be true due to error in pandoc.read
 labels = {fig = "Fig. ", tab = "Tab. ", eqn = "Eqn. "}
 
@@ -103,7 +103,7 @@ function Str(element)
 end
 
 function increment_section_and_reset_count(element)
-    if section and (element.t == "Header") and (element.level == 1) then
+    if section and (element.t == "Header") and (element.level == 1) and not element.classes:find("unnumbered") then
         section = section + 1
         for key, value in pairs(count) do
             count[key] = 0
