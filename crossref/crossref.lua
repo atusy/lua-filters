@@ -101,7 +101,7 @@ function Str(element)
             -- TODO: fails here
             --return(markdown(element.text))
             return(element)
-        end
+        else
             return(element)
         end
     end
