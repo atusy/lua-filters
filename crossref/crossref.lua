@@ -1,64 +1,142 @@
-lab = {fig = "Fig. ", tab = "Tab. "}
-cnt = {fig = 0, tab = 0}
-idx = {}
-idx["fig"] = {}
-idx["tab"] = {}
+section = nil
+link = false -- cannot be true due to error in pandoc.read
+labels = {fig = "Fig. ", tab = "Tab. ", eqn = "Eqn. "}
 
-function pattern_hash(t)
-  return "((.*)%(#" .. t .. ":([%a%d-]+)%)(.*))"
-end
-
-function pattern_ref(t)
-  return "((.*)@ref%(" .. t .. ":([%a%d-]+)%)(.*))"
-end
+-- Initialize counts and index
+count = {}
+index = {}
 
 patterns = {
-  hash = pattern_hash,
-  ref = pattern_ref
+    ref = "(@ref%(([%a%d-]+):([%a%d-]+)%))",
+    hash = "(%(#([%a%d-]+):([%a%d-]+)%))"
 }
 
-function resolve_label_(elem, t, p)
-  local pattern = patterns[p](t)
-  local ref = elem.text:match(pattern)
-  if ref then
-    local key = ref:gsub(pattern, "%3")
-    local id = t .. "-" .. key
-    if not idx[t][key] then
-      cnt[t] = cnt[t] + 1
-      idx[t][key] = cnt[t]
-    end
-    
-    if p == "hash" then
-      res = pandoc.Span(
-        pandoc.Str(ref:gsub(pattern, "%2" .. lab[t] .. idx[t][key] .. "%4"))
-      )
-      res.identifier = id
-      return res
+function escape_symbol(text)
+    return(text:gsub("([\\`*_{}[]()>#+-.!])", "\\%1"))
+end
+
+function markdown(text)
+    return(pandoc.read(text, "markdown").blocks[1].content)
+end
+
+function name_span(text, name)
+    if link then
+        return("[" .. text .. "]{#" .. name .. "}")
     else
-      return {
-        pandoc.Str(ref:gsub(pattern, "%2")),
-        pandoc.Link(idx[t][key] .. "", "#" .. id),
-        pandoc.Str(ref:gsub(pattern, "%4"))
-      }
+        return(text)
     end
-  end
 end
 
-function resolve_label(elem, t)
-  local res = resolve_label_(elem, t, "hash")
-  if res then
-    return res
-  end
-
-  return resolve_label_(elem, t, "ref")
-end
-
-function Str(elem)
-  local res = nil
-  for key, value in pairs(idx) do
-    res = resolve_label(elem, key)
-    if res then
-      return (res)
+function hyperlink(text, href)
+    if link then
+        return("[" .. text .. "](" .. href .. ")")
+    else
+        return(text)
     end
-  end
 end
+
+function solve_hash(element)
+    local pattern = patterns["hash"]
+
+    if element.text:match(pattern) then
+        local _ = ""
+        local type = ""
+        local key = ""
+        local name = ""
+        local label = ""
+        for matched in element.text:gmatch(pattern) do
+            _, type, name = matched:match(pattern)
+
+            label = labels[type]
+            
+            if index[type][name] == nil then
+                count[type] = count[type] + 1
+                if section then
+                    index[type][name] = section .. "." .. count[type]
+                else
+                    index[type][name] = "" .. count[type]
+                end
+            end
+            
+            element.text = escape_symbol(element.text)
+            element.text = element.text:gsub(
+                matched:gsub("([()-])", "%%%1"), -- escaping
+                name_span(label .. index[type][name], type .. "-" .. name)
+            )
+        end
+        if link then
+            -- TODO: fails here
+            return(markdown(element.text))
+        else
+            return(element)
+        end
+    end
+end
+
+function Str(element)
+    local pattern = patterns["ref"]
+    if element.text:match(pattern) then
+        local ref = ""
+        element.text = escape_symbol(element.text)
+        for matched in element.text:gmatch(pattern) do
+            _, type, name = matched:match(pattern)
+
+            label = labels[type]
+            
+            if index[type][name] then
+                ref = index[type][name]
+            else
+                ref = "??"
+            end
+            
+            element.text = element.text:gsub(
+                matched:gsub("([()-])", "%%%1"), -- escaping
+                hyperlink(ref, type .. "-" .. name)
+            )
+        end
+        if link then
+            return(markdown(element.text))
+        else
+            return(element)
+        end
+    end
+end
+
+function increment_section_and_reset_count(element)
+    if section and (element.t == "Header") and (element.level == 1) then
+        section = section + 1
+        for key, value in pairs(count) do
+            count[key] = 0
+        end
+    end
+end
+
+function Meta(element)
+    if element.crossref and element.crossref.labels then
+        for key, val in pairs(element.crossref.labels) do
+            labels[key] = pandoc.utils.stringify(val)
+        end
+    end
+
+    for k, v in pairs(labels) do
+        count[k] = 0
+        index[k] = {}
+    end
+
+    return(element)
+end
+
+function Pandoc(document)
+    local hblocks = {}
+    for i,el in pairs(document.blocks) do
+        increment_section_and_reset_count(el)
+        table.insert(hblocks, pandoc.walk_block(el, {Str = solve_hash}))
+    end
+    return(pandoc.Pandoc(hblocks, document.meta))
+end
+
+return {
+  { Meta = Meta },
+  { Pandoc = Pandoc },
+  { Str = Str }
+}
