@@ -67,7 +67,6 @@ function solve_hash(element)
             )
         end
         if link then
-            -- TODO: fails here
             return(markdown(element.text))
         else
             return(element)
@@ -99,8 +98,10 @@ function Str(element)
             )
         end
         if link then
-            return(markdown(element.text))
-        else
+            -- TODO: fails here
+            --return(markdown(element.text))
+            return(element)
+        end
             return(element)
         end
     end
