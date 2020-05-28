@@ -44,6 +44,9 @@ function solve_hash(element)
         local key = ""
         local name = ""
         local label = ""
+        if link then
+            element.text = escape_symbol(element.text)
+        end
         for matched in element.text:gmatch(pattern) do
             _, type, name = matched:match(pattern)
 
@@ -58,7 +61,6 @@ function solve_hash(element)
                 end
             end
             
-            element.text = escape_symbol(element.text)
             element.text = element.text:gsub(
                 matched:gsub("([()-])", "%%%1"), -- escaping
                 name_span(label .. index[type][name], type .. "-" .. name)
@@ -77,7 +79,9 @@ function Str(element)
     local pattern = patterns["ref"]
     if element.text:match(pattern) then
         local ref = ""
-        element.text = escape_symbol(element.text)
+        if link then
+            element.text = escape_symbol(element.text)
+        end
         for matched in element.text:gmatch(pattern) do
             _, type, name = matched:match(pattern)
 
