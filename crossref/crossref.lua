@@ -6,6 +6,11 @@
 --   link: true
 --   section: 0
 
+-- latex, pdf, and context supports crossref by themselves
+if (FORMAT == "latex") or (FORMAT == "pdf") or (FORMAT == "context") then
+    return(nil)
+end
+
 labels = {fig = "Fig. ", tab = "Tab. ", eqn = "Eqn. "}
 
 -- Initialize counts and index
@@ -80,7 +85,7 @@ function solve_hash(element)
     end
 end
 
-function Str(element)
+function solve_ref(element)
     local pattern = patterns["ref"]
     if element.text:match(pattern) then
         local _ = ""
@@ -123,11 +128,13 @@ function increment_section_and_reset_count(element)
 end
 
 function Meta(element)
+    if number_sections then
+        section = 0
+    end
+    link = true
     if element.crossref then
-        if element.crossref.section then
-            section = tonumber(pandoc.utils.stringify(element.crossref.section))
-        else
-            section = 0
+        if not element.crossref.number_sections or (element.crossref.number_sections ~= nil) then
+            section = nil
         end
         
         if element.crossref.labels then
@@ -137,8 +144,6 @@ function Meta(element)
         end
         if element.crossref.link then
             link = element.crossref.link
-        else
-            link = true
         end
     end
 
@@ -159,8 +164,30 @@ function Pandoc(document)
     return(pandoc.Pandoc(hblocks, document.meta))
 end
 
+header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+number_sections = (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
+
+function Header(elem)    
+    header_levels[elem.level] = header_levels[elem.level] + 1
+    local level = ""
+    for i = elem.level,1,-1 do
+        level = header_levels[i] .. "." .. level
+    end
+    index["section"][elem.identifier] = level
+    if number_sections and section then
+        level = level .. " "
+        content = {pandoc.Str(level)}
+        for i = 1,#elem.content do
+            content[i + 1] = elem.content[i]
+        end
+        elem.content = content
+        return(elem)
+    end
+end
+
 return {
   { Meta = Meta },
   { Pandoc = Pandoc },
-  { Str = Str }
+  { Str = solve_ref }
 }
