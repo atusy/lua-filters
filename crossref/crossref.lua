@@ -19,6 +19,7 @@ index = {}
 
 patterns = {
     ref = "(@ref%(([%a%d-]+):([%a%d-]+)%))",
+    ref_section = "(@ref%(([%a%d-]+)%))",
     hash = "(%(#([%a%d-]+):([%a%d-]+)%))"
 }
 
@@ -85,37 +86,77 @@ function solve_hash(element)
     end
 end
 
-function solve_ref(element)
+function solve_ref_general(str)
     local pattern = patterns["ref"]
-    if element.text:match(pattern) then
+    if str.text:match(pattern) then
         local _ = ""
         local type = ""
         local name = ""
+        local ref = ""
         if link then
-            element.text = escape_symbol(element.text)
+            str.text = escape_symbol(str.text)
         end
-        for matched in element.text:gmatch(pattern) do
+        for matched in str.text:gmatch(pattern) do
             _, type, name = matched:match(pattern)
 
-            label = labels[type]
-            
             if index[type][name] then
                 ref = index[type][name]
             else
                 ref = "??"
             end
             
-            element.text = element.text:gsub(
+            str.text = str.text:gsub(
                 matched:gsub("([()-])", "%%%1"), -- escaping
                 hyperlink(ref, "#" .. type .. "-" .. name)
             )
         end
         if link then
-            return(markdown(element.text))
+            return(pandoc.read(str.text).blocks[1])
         else
-            return(element)
+            return(str)
         end
     end
+    return(str)
+end
+
+function solve_ref_section(str)
+    local pattern = patterns["ref_section"]
+    if link then
+        str.text = escape_symbol(str.text)
+    end
+    if str.text:match(pattern) then
+        local _ = ""
+        local type = "section"
+        local name = ""
+        local ref = ""
+        for matched in str.text:gmatch(pattern) do
+            _, name = matched:match(pattern)
+            if index[type][name] then
+                ref = index[type][name]
+            else
+                ref = "??"
+            end
+            
+            str.text = str.text:gsub(
+                matched:gsub("([()-])", "%%%1"), -- escaping
+                hyperlink(ref, "#" .. name)
+            )
+        end
+        if link then
+            return(markdown(str.text))
+        else
+            return(str)
+        end
+    end
+    return(str)
+end
+
+function solve_ref(str)
+    local res = solve_ref_general(str)
+    if (res.t == "Str") then
+        return(solve_ref_section(res))
+    end
+    return(pandoc.walk_block(res, {Str = solve_ref_section}))
 end
 
 function increment_section_and_reset_count(element)
@@ -128,15 +169,14 @@ function increment_section_and_reset_count(element)
 end
 
 function Meta(element)
-    if number_sections then
-        section = 0
-    end
+    header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
+    number_sections = (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
     link = true
     if element.crossref then
-        if not element.crossref.number_sections or (element.crossref.number_sections ~= nil) then
-            section = nil
+        if element.crossref.number_sections then
+            section = 0
         end
-        
+            
         if element.crossref.labels then
             for key, val in pairs(element.crossref.labels) do
                 labels[key] = pandoc.utils.stringify(val)
@@ -151,6 +191,7 @@ function Meta(element)
         count[k] = 0
         index[k] = {}
     end
+    index["section"] = {}
 
     return(element)
 end
@@ -164,18 +205,14 @@ function Pandoc(document)
     return(pandoc.Pandoc(hblocks, document.meta))
 end
 
-header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
-
-number_sections = (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
-
 function Header(elem)    
     header_levels[elem.level] = header_levels[elem.level] + 1
     local level = ""
     for i = elem.level,1,-1 do
         level = header_levels[i] .. "." .. level
     end
-    index["section"][elem.identifier] = level
-    if number_sections and section then
+    index["section"][elem.identifier] = level:gsub("%.$", "")
+    if number_sections then
         level = level .. " "
         content = {pandoc.Str(level)}
         for i = 1,#elem.content do
@@ -188,6 +225,7 @@ end
 
 return {
   { Meta = Meta },
+  { Header = Header },
   { Pandoc = Pandoc },
   { Str = solve_ref }
 }
