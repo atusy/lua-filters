@@ -162,6 +162,5 @@ end
 return {
   { Meta = Meta },
   { Pandoc = Pandoc },
-  { Str = Str },
-  { Header = function(x) print(x.identifier) end}
+  { Str = Str }
 }
