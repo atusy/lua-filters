@@ -1,10 +1,11 @@
-section = 0
-link = true
-
 -- Labels are tweeakable via meta e.g.,
 -- crossref:
 --   labels:
---     fig: "Figure "
+--     fig: "Fig."
+--     tab: "Tab."
+--   link: true
+--   section: 0
+
 labels = {fig = "Fig. ", tab = "Tab. ", eqn = "Eqn. "}
 
 -- Initialize counts and index
@@ -122,9 +123,22 @@ function increment_section_and_reset_count(element)
 end
 
 function Meta(element)
-    if element.crossref and element.crossref.labels then
-        for key, val in pairs(element.crossref.labels) do
-            labels[key] = pandoc.utils.stringify(val)
+    if element.crossref then
+        if element.crossref.section then
+            section = tonumber(pandoc.utils.stringify(element.crossref.section))
+        else
+            section = 0
+        end
+        
+        if element.crossref.labels then
+            for key, val in pairs(element.crossref.labels) do
+                labels[key] = pandoc.utils.stringify(val)
+            end
+        end
+        if element.crossref.link then
+            link = element.crossref.link
+        else
+            link = true
         end
     end
 
