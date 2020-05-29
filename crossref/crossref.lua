@@ -1,5 +1,10 @@
 section = 0
-link = true -- cannot be true due to error in pandoc.read
+link = true
+
+-- Labels are tweeakable via meta e.g.,
+-- crossref:
+--   labels:
+--     fig: "Figure "
 labels = {fig = "Fig. ", tab = "Tab. ", eqn = "Eqn. "}
 
 -- Initialize counts and index
@@ -143,5 +148,6 @@ end
 return {
   { Meta = Meta },
   { Pandoc = Pandoc },
-  { Str = Str }
+  { Str = Str },
+  { Header = function(x) print(x.identifier) end}
 }
