@@ -1,5 +1,5 @@
 section = 0
-link = false -- cannot be true due to error in pandoc.read
+link = true -- cannot be true due to error in pandoc.read
 labels = {fig = "Fig. ", tab = "Tab. ", eqn = "Eqn. "}
 
 -- Initialize counts and index
@@ -77,7 +77,9 @@ end
 function Str(element)
     local pattern = patterns["ref"]
     if element.text:match(pattern) then
-        local ref = ""
+        local _ = ""
+        local type = ""
+        local name = ""
         if link then
             element.text = escape_symbol(element.text)
         end
@@ -98,9 +100,7 @@ function Str(element)
             )
         end
         if link then
-            -- TODO: fails here
-            --return(markdown(element.text))
-            return(element)
+            return(markdown(element.text))
         else
             return(element)
         end
