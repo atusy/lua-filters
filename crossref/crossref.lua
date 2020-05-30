@@ -128,12 +128,6 @@ function solve_ref_general(str)
     return(str)
 end
 
-function f(x)
-    print(x.t)
-    print(pandoc.utils.stringify(x))
-    print("---")
-end
-
 function solve_ref_section(str)
     local pattern = patterns["ref_section"]
     if str.text:match(pattern) then
@@ -163,6 +157,7 @@ function solve_ref_section(str)
             return(str)
         end
     end
+    return(str)
 end
 
 function solve_ref(str)
@@ -199,9 +194,9 @@ function Meta(element)
                 labels[key] = pandoc.utils.stringify(val)
             end
         end
-        if element.crossref.link then
-            link = element.crossref.link
-        end
+        link = element.crossref.link
+    else
+        link = true
     end
 
     for k, v in pairs(labels) do
