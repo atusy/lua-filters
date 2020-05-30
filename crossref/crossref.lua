@@ -6,7 +6,7 @@ crossref:
   labels:
     fig: "Fig. "
     tab: "Tab. "
-    eqn: "Eqn. "
+    eq: "Eqn. "
   link: true
   number_sections: false # TODO: NOT WORKING!!
 ---
@@ -20,7 +20,7 @@ if (FORMAT == "latex") or (FORMAT == "pdf") or (FORMAT == "context") then
     return(nil)
 end
 
-labels = {fig = "Fig. ", tab = "Tab. ", eqn = "Eqn. "}
+labels = {fig = "Fig. ", tab = "Tab. ", eq = "Eqn. "}
 
 -- Initialize counts and index
 count = {}
@@ -31,6 +31,12 @@ patterns = {
     ref_section = "(@ref%(([%a%d-]+)%))",
     hash = "(%(#([%a%d-]+):([%a%d-]+)%))"
 }
+
+function f(x)
+    print(x.t)
+    print(pandoc.utils.stringify(x))
+    print("---")
+end
 
 function escape_symbol(text)
     return(text:gsub("([\\`*_{}[]()>#+-.!])", "\\%1"))
@@ -113,7 +119,7 @@ function solve_ref_general(str)
             else
                 ref = "??"
             end
-            
+
             str.text = str.text:gsub(
                 matched:gsub("([()-])", "%%%1"), -- escaping
                 hyperlink(ref, "#" .. type .. "-" .. name)
@@ -185,7 +191,7 @@ function Meta(element)
     previous_header_level = 0
     if element.crossref then
         number_sections = element.crossref.number_sections and (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
-        if number_sections then
+        if element.crossref.number_sections then
             section = 0
         end
             
