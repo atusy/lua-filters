@@ -48,11 +48,11 @@ function name_span(text, name)
     end
 end
 
-function hyperlink(text, href)
+function hyperlink(string, href)
     if link then
-        return("[" .. text .. "](" .. href .. ")")
+        return("[" .. string .. "](" .. href .. ")")
     else
-        return(text)
+        return(string)
     end
 end
 
