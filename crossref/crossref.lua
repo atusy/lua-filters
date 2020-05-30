@@ -186,7 +186,8 @@ end
 
 function Meta(element)
     header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
-    link = true
+    n_header_levels = 9
+    previous_header_level = 0
     if element.crossref then
         number_sections = element.crossref.number_sections and (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
         if number_sections then
@@ -221,7 +222,13 @@ function Pandoc(document)
     return(pandoc.Pandoc(hblocks, document.meta))
 end
 
-function Header(elem)    
+function Header(elem)
+    if (elem.level < previous_header_level) then
+        for i=elem.level+1,n_header_levels do
+            header_levels[i] = 0
+        end
+    end
+    previous_header_level = elem.level
     header_levels[elem.level] = header_levels[elem.level] + 1
     local level = ""
     for i = elem.level,1,-1 do
