@@ -119,12 +119,18 @@ function solve_ref_general(str)
     return(str)
 end
 
+function f(x)
+    print(x.t)
+    print(pandoc.utils.stringify(x))
+    print("---")
+end
+
 function solve_ref_section(str)
     local pattern = patterns["ref_section"]
-    if link then
-        str.text = escape_symbol(str.text)
-    end
     if str.text:match(pattern) then
+        if link then
+            str.text = escape_symbol(str.text)
+        end
         local _ = ""
         local type = "section"
         local name = ""
@@ -148,7 +154,6 @@ function solve_ref_section(str)
             return(str)
         end
     end
-    return(str)
 end
 
 function solve_ref(str)
@@ -156,7 +161,9 @@ function solve_ref(str)
     if (res.t == "Str") then
         return(solve_ref_section(res))
     end
-    return(pandoc.walk_block(res, {Str = solve_ref_section}))
+    
+    res = pandoc.walk_block(res, {Str = solve_hash})
+    return(res.content)
 end
 
 function increment_section_and_reset_count(element)
