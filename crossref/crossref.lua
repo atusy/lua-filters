@@ -1,10 +1,19 @@
--- Labels are tweeakable via meta e.g.,
--- crossref:
---   labels:
---     fig: "Fig."
---     tab: "Tab."
---   link: true
---   section: 0
+--[[
+Default setting is as follows
+
+---
+crossref:
+  labels:
+    fig: "Fig. "
+    tab: "Tab. "
+    eqn: "Eqn. "
+  link: true
+  number_sections: false # TODO: NOT WORKING!!
+---
+
+In case `number_sections: true`, and using HTML/EPUB,
+`--number-sections` (or the `-N`) option should also be enabled.
+]]
 
 -- latex, pdf, and context supports crossref by themselves
 if (FORMAT == "latex") or (FORMAT == "pdf") or (FORMAT == "context") then
@@ -177,10 +186,10 @@ end
 
 function Meta(element)
     header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
-    number_sections = (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
     link = true
     if element.crossref then
-        if element.crossref.number_sections then
+        number_sections = element.crossref.number_sections and (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
+        if number_sections then
             section = 0
         end
             
