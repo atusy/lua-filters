@@ -4,21 +4,32 @@ previous_header_level = 0
 full_attributes = true
 
 function Header(elem)
+  -- If unnumbered
   if (elem.classes:find("unnumbered")) then
+    if full_attributes then
+      elem.attributes["data-number"] = ""
+    end
     return(elem)
   end
+
+  -- Else
+  --- Reset and update section_number_table
   if (elem.level < previous_header_level) then
     for i=elem.level+1,n_section_number_table do
       section_number_table[i] = 0
     end
   end
   section_number_table[elem.level] = section_number_table[elem.level] + 1
+
+  --- Define section number as string
   local section_number_string = tostring(section_number_table[elem.level])
   if elem.level > 1 then
     for i = elem.level-1,1,-1 do
       section_number_string = section_number_table[i] .. "." .. section_number_string
     end
   end
+
+  --- Update Header element
   local section_number_pandoc = pandoc.Span(section_number_string)
   if full_attributes then
     section_number_pandoc.classes = {"header-section-number"}
