@@ -1,7 +1,21 @@
--- For the formats not supporting the number-sections option
+--[[
+Number sections for formats without --number-sections
+A meta data option is `number_sections_with_attributes`,
+which is by default `true` except for markdown FORMAT.
+
+---
+number_sections_with_attributes: false
+---
+]]
+full_attributes = FORMAT ~= "markdown"
 section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
 previous_header_level = 0
-full_attributes = true
+
+function Meta(meta)
+  if meta.number_sections_with_attributes then
+    full_attributes = meta.number_sections_with_attributes
+  end
+end
 
 function Header(elem)
   -- If unnumbered
@@ -31,10 +45,14 @@ function Header(elem)
 
   --- Update Header element
   table.insert(elem.content, 1, pandoc.Space())
-  table.insert(elem.content, 1, pandoc.Span(section_number_string))
   if full_attributes then
+    table.insert(elem.content, 1, pandoc.Span(section_number_string))
     elem.content[1].classes = {"header-section-number"}
     elem.attributes["data-number"] = section_number_string
+  else
+    table.insert(elem.content, 1, pandoc.Str(section_number_string))
   end
   return(elem)
 end
+
+return({ {Meta = Meta}, {Header = Header} })
