@@ -30,12 +30,12 @@ function Header(elem)
   end
 
   --- Update Header element
-  local section_number_pandoc = pandoc.Span(section_number_string)
+  local section_number_span = pandoc.Span(section_number_string)
   if full_attributes then
-    section_number_pandoc.classes = {"header-section-number"}
+    section_number_span.classes = {"header-section-number"}
     elem.attributes["data-number"] = section_number_string
   end
-  local content = {section_number_pandoc, pandoc.Space()}
+  local content = {section_number_span, pandoc.Space()}
   for i = 1,#elem.content do
     content[i + 2] = elem.content[i]
   end
