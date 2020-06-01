@@ -1,5 +1,5 @@
 reference_text_table = {}
-reference_text_pattern = "%(ref:([%a%d-]+)%)"
+reference_text_pattern = "^%(ref:([%a%d-]+)%)$"
 
 function curate_refs(para)
   local first_element = para.content[1]
