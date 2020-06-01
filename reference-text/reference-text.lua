@@ -9,6 +9,9 @@ function curate_refs(para)
     local n = #para.content
     local reference_text = {}
     if matched and (n > 2) then
+      if reference_text_table[matched] then
+        error("Duplicated text reference labels: " .. matched)
+      end
       for i=3,n do
         reference_text[i - 2] = para.content[i]
       end
