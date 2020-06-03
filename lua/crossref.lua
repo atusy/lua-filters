@@ -20,7 +20,7 @@ if (FORMAT == "latex") or (FORMAT == "pdf") or (FORMAT == "context") then
     return(nil)
 end
 
-local labels = {fig = "Fig. ", tab = "Tab. ", eq = "Eqn. "}
+local labels = {fig = "Fig. ", tab = "Tab. ", eq = "Eq. "}
 local header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
 local n_header_levels = 9
 local previous_header_level = 0
