@@ -1,7 +1,7 @@
-reference_text_table = {}
-reference_text_pattern = "^%(ref:([%a%d-]+)%)$"
+local reference_text_table = {}
+local reference_text_pattern = "^%(ref:([%a%d-]+)%)$"
 
-function curate_refs(para)
+local function curate_refs(para)
   local first_element = para.content[1]
   local second_element = para.content[2]
   if (first_element.tag == "Str") and second_element and (second_element.tag == "Space") then
@@ -21,14 +21,16 @@ function curate_refs(para)
   end
 end
 
-function solve_refs(str)
+local function solve_refs(str)
   local matched = str.text:match(reference_text_pattern)
   if matched then
     return(reference_text_table[matched])
   end
 end
 
-return {
-    {Para = curate_refs},
-    {Str = solve_refs}
+reference_text = {
+  {Para = curate_refs},
+  {Str = solve_refs}
 }
+
+return reference_text

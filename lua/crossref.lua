@@ -20,33 +20,33 @@ if (FORMAT == "latex") or (FORMAT == "pdf") or (FORMAT == "context") then
     return(nil)
 end
 
-labels = {fig = "Fig. ", tab = "Tab. ", eq = "Eqn. "}
+local labels = {fig = "Fig. ", tab = "Tab. ", eq = "Eqn. "}
+local header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
+local n_header_levels = 9
+local previous_header_level = 0
+local number_sections = nil
+local section = nil
+local link = nil
 
 -- Initialize counts and index
-count = {}
-index = {}
+local count = {}
+local index = {}
 
-patterns = {
+local patterns = {
     ref = "(@ref%(([%a%d-]+):([%a%d-]+)%))",
     ref_section = "(@ref%(([%a%d-]+)%))",
     hash = "(%(#([%a%d-]+):([%a%d-]+)%))"
 }
 
-function f(x)
-    print(x.t)
-    print(pandoc.utils.stringify(x))
-    print("---")
-end
-
-function escape_symbol(text)
+local function escape_symbol(text)
     return(text:gsub("([\\`*_{}[]()>#+-.!])", "\\%1"))
 end
 
-function markdown(text)
+local function markdown(text)
     return(pandoc.read(text, "markdown").blocks[1].content)
 end
 
-function name_span(text, name)
+local function name_span(text, name)
     if link then
         return("[" .. text .. "]{#" .. name .. "}")
     else
@@ -54,7 +54,7 @@ function name_span(text, name)
     end
 end
 
-function hyperlink(string, href)
+local function hyperlink(string, href)
     if link then
         return("[" .. string .. "](" .. href .. ")")
     else
@@ -62,7 +62,7 @@ function hyperlink(string, href)
     end
 end
 
-function solve_hash(element)
+local function solve_hash(element)
     local pattern = patterns["hash"]
 
     if element.text:match(pattern) then
@@ -101,7 +101,7 @@ function solve_hash(element)
     end
 end
 
-function solve_ref_general(str)
+local function solve_ref_general(str)
     local pattern = patterns["ref"]
     if str.text:match(pattern) then
         local _ = ""
@@ -134,7 +134,7 @@ function solve_ref_general(str)
     return(str)
 end
 
-function solve_ref_section(str)
+local function solve_ref_section(str)
     local pattern = patterns["ref_section"]
     if str.text:match(pattern) then
         if link then
@@ -166,7 +166,7 @@ function solve_ref_section(str)
     return(str)
 end
 
-function solve_ref(str)
+local function solve_ref(str)
     local res = solve_ref_general(str)
     if (res.t == "Str") then
         return(solve_ref_section(res))
@@ -176,7 +176,7 @@ function solve_ref(str)
     return(res.content)
 end
 
-function increment_section_and_reset_count(element)
+local function increment_section_and_reset_count(element)
     if section and (element.t == "Header") and (element.level == 1) and not element.classes:find("unnumbered") then
         section = section + 1
         for key, value in pairs(count) do
@@ -185,10 +185,7 @@ function increment_section_and_reset_count(element)
     end
 end
 
-function Meta(element)
-    header_levels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
-    n_header_levels = 9
-    previous_header_level = 0
+local function Meta(element)
     if element.crossref then
         number_sections = element.crossref.number_sections and (not FORMAT:match("html[45]?")) and (FORMAT ~= "epub")
         if element.crossref.number_sections then
@@ -214,7 +211,7 @@ function Meta(element)
     return(element)
 end
 
-function Pandoc(document)
+local function Pandoc(document)
     local hblocks = {}
     for i,el in pairs(document.blocks) do
         increment_section_and_reset_count(el)
@@ -223,7 +220,7 @@ function Pandoc(document)
     return(pandoc.Pandoc(hblocks, document.meta))
 end
 
-function Header(elem)
+local function Header(elem)
     if (elem.level < previous_header_level) then
         for i=elem.level+1,n_header_levels do
             header_levels[i] = 0
@@ -247,9 +244,11 @@ function Header(elem)
     end
 end
 
-return {
-  { Meta = Meta },
-  { Header = Header },
-  { Pandoc = Pandoc },
-  { Str = solve_ref }
+crossref = {
+    { Meta = Meta },
+    { Header = Header },
+    { Pandoc = Pandoc },
+    { Str = solve_ref }
 }
+
+return crossref

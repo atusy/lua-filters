@@ -7,17 +7,17 @@ which is by default `true` except for markdown FORMAT.
 number_sections_with_attributes: false
 ---
 ]]
-full_attributes = FORMAT ~= "markdown"
-section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
-previous_header_level = 0
+local full_attributes = FORMAT ~= "markdown"
+local section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
+local previous_header_level = 0
 
-function Meta(meta)
+local function Meta(meta)
   if meta.number_sections_with_attributes then
     full_attributes = meta.number_sections_with_attributes
   end
 end
 
-function Header(elem)
+local function Header(elem)
   -- If unnumbered
   if (elem.classes:find("unnumbered")) then
     if full_attributes then
@@ -55,4 +55,9 @@ function Header(elem)
   return(elem)
 end
 
-return({ {Meta = Meta}, {Header = Header} })
+number_sections = {
+  {Meta = Meta},
+  {Header = Header}
+}
+
+return(number_sections)
