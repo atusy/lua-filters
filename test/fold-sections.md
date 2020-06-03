@@ -1,0 +1,6 @@
+
+# foo {.details}
+
+bar
+
+# buzz
