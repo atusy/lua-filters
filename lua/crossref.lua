@@ -34,12 +34,15 @@ local index = {}
 
 local patterns = {
     ref = "(@ref%(([%a%d-]+):([%a%d-]+)%))",
+    ref_escaped = "(\\@ref\\%(([%a%d-]+):([%a%d-]+)\\%))",
     ref_section = "(@ref%(([%a%d-]+)%))",
-    hash = "(%(#([%a%d-]+):([%a%d-]+)%))"
+    ref_section_escaped = "(\\@ref\\%(([%a%d-]+)\\%))",
+    hash = "(%(#([%a%d-]+):([%a%d-]+)%))",
+    hash_escaped = "(\\%(\\#([%a%d-]+):([%a%d-]+)\\%))"
 }
 
 local function escape_symbol(text)
-    return(text:gsub("([\\`*_{}[]()>#+-.!])", "\\%1"))
+    return(text:gsub("([\\`*_{}%[%]%(%)>#+-.!])", "\\%1"))
 end
 
 local function markdown(text)
@@ -73,6 +76,7 @@ local function solve_hash(element)
         local label = ""
         if link then
             element.text = escape_symbol(element.text)
+            pattern = patterns["hash_escaped"]
         end
         for matched in element.text:gmatch(pattern) do
             _, type, name = matched:match(pattern)
@@ -110,6 +114,7 @@ local function solve_ref_general(str)
         local ref = ""
         if link then
             str.text = escape_symbol(str.text)
+            pattern = patterns["ref_escaped"]
         end
         for matched in str.text:gmatch(pattern) do
             _, type, name = matched:match(pattern)
@@ -139,6 +144,7 @@ local function solve_ref_section(str)
     if str.text:match(pattern) then
         if link then
             str.text = escape_symbol(str.text)
+            pattern = patterns["ref_section_escaped"]
         end
         local _ = ""
         local type = "section"
