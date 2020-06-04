@@ -17,4 +17,4 @@ jobs:
     - uses: r-lib/actions/setup-pandoc@v1
       with:
         pandoc-version: '2.7.3' # The pandoc version to download (if necessary) and use.
-    - run: pandoc test/reference-text.md -t native
+    - run: sh test/test.sh
