@@ -1,3 +1,5 @@
+-- A filter that mimics bookdown's reference text
+-- cf. https://github.com/rstudio/bookdown/
 local reference_text_table = {}
 local patterns = {
   completing = "^%(ref:([%a%d-]+)%)$",
