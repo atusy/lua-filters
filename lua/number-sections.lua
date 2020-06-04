@@ -9,6 +9,7 @@ number_sections_with_attributes: false
 ]]
 local full_attributes = FORMAT ~= "markdown"
 local section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
+local n_section_number_table = #section_number_table
 local previous_header_level = 0
 
 local function Meta(meta)
@@ -33,6 +34,7 @@ local function Header(elem)
       section_number_table[i] = 0
     end
   end
+  previous_header_level = elem.level
   section_number_table[elem.level] = section_number_table[elem.level] + 1
 
   --- Define section number as string
