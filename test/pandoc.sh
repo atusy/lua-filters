@@ -1,4 +1,7 @@
 #! /bin/bash
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+cd $SCRIPT_DIR
+cd ..
 markdowns=$(find test/*.md)
 for md in $markdowns
 do
