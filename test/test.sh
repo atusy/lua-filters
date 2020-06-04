@@ -15,7 +15,7 @@ for md in $markdowns
 do
   hs=$(echo $md | sed s/md$/hs/)
   lua_filter=$(echo $md | sed s/^test/lua/ | sed s/md$/lua/)
-  pandoc $md -t native -o $hs
+  pandoc $md -L $lua_filter -t native -o $hs
 done
 
 git_diff=$(git diff)
