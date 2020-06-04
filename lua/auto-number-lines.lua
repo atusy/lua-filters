@@ -2,7 +2,7 @@ local function CodeBlock(code)
   local _, index = code.classes:find('un-numberLines')
   if index then
     local classes = {}
-    for i,j in code.classes do
+    for i,j in ipairs(code.classes) do
       if i ~= idex then
         table.insert(classes, j)
       end
