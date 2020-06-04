@@ -13,7 +13,7 @@ function postprocess() {
   fi;
 }
 
-bash test/pandoc.sh
+bash test/pandoc.sh native
 
 git_diff=$(git diff)
 
