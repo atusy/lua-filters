@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 stashed=$(git stash)
 
