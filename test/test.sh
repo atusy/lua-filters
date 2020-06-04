@@ -2,7 +2,7 @@
 
 stashed=$(git stash)
 
-function postprocess () {
+function postprocess() {
   git reset --hard --quiet
   if [ "$stashed" != "No local changes to save" ]
   then
