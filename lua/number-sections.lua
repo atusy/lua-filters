@@ -11,6 +11,10 @@ local full_attributes = FORMAT ~= "markdown"
 local section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
 local n_section_number_table = #section_number_table
 local previous_header_level = 0
+local separator = pandoc.Space()
+if FORMAT == "docx" then -- to be consistent with Pandoc >= 2.10.1
+  separator = pandoc.Str("\t")
+end
 
 local function Meta(meta)
   if meta.number_sections_with_attributes then
@@ -24,7 +28,7 @@ local function Header(elem)
     if full_attributes then
       elem.attributes["data-number"] = ""
     end
-    return(elem)
+    return elem
   end
 
   -- Else
@@ -46,7 +50,7 @@ local function Header(elem)
   end
 
   --- Update Header element
-  table.insert(elem.content, 1, pandoc.Space())
+  table.insert(elem.content, 1, separator)
   if full_attributes then
     table.insert(elem.content, 1, pandoc.Span(section_number_string))
     elem.content[1].classes = {"header-section-number"}
@@ -54,12 +58,12 @@ local function Header(elem)
   else
     table.insert(elem.content, 1, pandoc.Str(section_number_string))
   end
-  return(elem)
+  return elem
 end
 
-number_sections = {
+local number_sections = {
   {Meta = Meta},
   {Header = Header}
 }
 
-return(number_sections)
+return number_sections
