@@ -13,8 +13,21 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+https://github.com/atusy/lua-filters/blob/master/lua/number-sections.lua
 ]]
-local full_attributes = FORMAT ~= "markdown"
+local attributes_free_formats = {
+  -- Improve readability of markdown formats by let them be attributes free
+  -- https://pandoc.org/MANUAL.html#general-options
+  commonmark=1,
+  commonmark_x=1,
+  gfm=1, markdown_github=1,
+  markdown=1,
+  markdown_mmd=1,
+  markdown_phpextra=1,
+  markdown_strict=1
+}
+local full_attributes = attributes_free_formats[FORMAT] == nil
 local section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
 local n_section_number_table = #section_number_table
 local previous_header_level = 0
@@ -68,9 +81,7 @@ local function Header(elem)
   return elem
 end
 
-local number_sections = {
+return {
   {Meta = Meta},
   {Header = Header}
 }
-
-return number_sections
