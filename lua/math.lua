@@ -22,10 +22,13 @@ local function Meta(elem)
 end
 
 local function Math(elem)
-  return pandoc.utils.blocks_to_inlines(pandoc.read(
-    pandoc.pipe(cmd, {"-t", "html", "-f", "markdown"}, "$" .. elem.text .. "$"),
-    "html"
-  ).blocks)
+  local text = "$" .. elem.text .. "$"
+  if elem.mathtype == "DisplayMath" then
+    text = "$" .. text .. "$"
+  end
+  return pandoc.read(
+    pandoc.pipe(cmd, {"-t", "html", "-f", "markdown"}, text), "html"
+  ).blocks[1].content
 end
 
 return {
