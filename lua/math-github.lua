@@ -22,8 +22,8 @@ function Math(elem)
   end
   local text = pandoc.pipe(
     "R",
-    {"--vanilla", "-q", "-s", "-e", "cat(URLencode(r'(" .. elem.text .. ")'))"},
-    ""
+    {"--vanilla", "-q", "-s", "-e", "cat(URLencode(readLines('stdin', warn = FALSE)), sep = '\n')"},
+    elem.text
   )
   return pandoc.utils.blocks_to_inlines(pandoc.read("![]("..base_url..text.."&mode="..mathtype..")", "markdown").blocks)
 end
