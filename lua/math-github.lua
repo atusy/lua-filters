@@ -20,8 +20,8 @@ function Math(elem)
   local text = pandoc.pipe(
     "R",
     {
-      "--vanilla", "-q", "-s",
-      "-e", "cat(URLencode(readLines('stdin', warn = FALSE)), sep = '\n')"
+      "--vanilla", "-q", "-s", "-e",
+      "cat(URLencode(paste(readLines('stdin', warn = FALSE), collapse = '')))"
     },
     elem.text
   )
