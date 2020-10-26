@@ -16,14 +16,16 @@ https://github.com/atusy/lua-filters/blob/master/lua/math-github.lua
 base_url = "https://render.githubusercontent.com/render/math?math="
 
 function Math(elem)
-  local mathtype = "inline"
-  if elem.mathtype == "DisplayMath" then
-    mathtype = "display"
-  end
+  local mode = (elem.mathtype == "DisplayMath") and "display" or "inline"
   local text = pandoc.pipe(
     "R",
-    {"--vanilla", "-q", "-s", "-e", "cat(URLencode(readLines('stdin', warn = FALSE)), sep = '\n')"},
+    {
+      "--vanilla", "-q", "-s",
+      "-e", "cat(URLencode(readLines('stdin', warn = FALSE)), sep = '\n')"
+    },
     elem.text
   )
-  return pandoc.utils.blocks_to_inlines(pandoc.read("![]("..base_url..text.."&mode="..mathtype..")", "markdown").blocks)
+  return pandoc.utils.blocks_to_inlines(pandoc.read(string.format(
+    "![`%s`](%s%s&mode=%s){.%s}", elem.text, base_url, text, mode, elem.mathtype
+  ), "markdown").blocks)
 end
