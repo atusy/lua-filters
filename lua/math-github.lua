@@ -1,6 +1,9 @@
 --[[
 math-github - Render math based on render.githubusercontent.com
 
+Math expression is URL-encoded by R.
+Specify the path of R via "r-path" metadata.
+
 # MIT License
 
 Copyright (c) 2020 Atsushi Yasumoto
@@ -13,19 +16,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 https://github.com/atusy/lua-filters/blob/master/lua/math-github.lua
 ]]
-base_url = "https://render.githubusercontent.com/render/math?math="
+local base_url = "https://render.githubusercontent.com/render/math?math="
+local args = {
+  "--vanilla", "-q", "-s", "-e",
+  "cat(URLencode(paste(readLines('stdin', warn = FALSE), collapse = '')))"
+}
 
-function Math(elem)
+local function Meta(elem)
+  R = elem["r-path"] and pandoc.utils.stringify(elem["r-path"]) or "R"
+end
+
+local function Math(elem)
   local mode = (elem.mathtype == "DisplayMath") and "display" or "inline"
-  local text = pandoc.pipe(
-    "R",
-    {
-      "--vanilla", "-q", "-s", "-e",
-      "cat(URLencode(paste(readLines('stdin', warn = FALSE), collapse = '')))"
-    },
-    elem.text
-  )
+  local text = pandoc.pipe(R, args, elem.text)
   return pandoc.utils.blocks_to_inlines(pandoc.read(string.format(
     "![`%s`](%s%s&mode=%s){.%s}", elem.text, base_url, text, mode, elem.mathtype
   ), "markdown").blocks)
 end
+
+return {{Meta = Meta}, {Math = Math}}
