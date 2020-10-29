@@ -27,10 +27,12 @@ local function Meta(elem)
 end
 
 local function Math(elem)
-  local mode = (elem.mathtype == "DisplayMath") and "display" or "inline"
-  local text = pandoc.pipe(R, args, elem.text)
   return pandoc.utils.blocks_to_inlines(pandoc.read(string.format(
-    "![`%s`](%s%s&mode=%s){.%s}", elem.text, base_url, text, mode, elem.mathtype
+    "![`%s`](%s%s&mode=%s){.%s}",
+    elem.text,
+    base_url, pandoc.pipe(R, args, elem.text),
+    (elem.mathtype == "DisplayMath") and "display" or "inline",
+    elem.mathtype
   ), "markdown").blocks)
 end
 
