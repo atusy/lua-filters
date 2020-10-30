@@ -24,13 +24,11 @@ function Meta(meta)
 end
 
 function Inlines(inlines)
-  local n = #inlines - 2
-  if n <= 0 then
-    return nil
-  end
-
-  for i=1,n do
-    inlines[i+1] = (inlines[i].t == 'Note'
+  for i=1,#inlines do
+    inlines[i+1] = (
+        inlines[i+2]
+      ) and (
+        inlines[i].t == 'Note'
       ) and (
         inlines[i+1].t == 'Space'
       ) and (
