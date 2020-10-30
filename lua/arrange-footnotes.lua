@@ -19,9 +19,7 @@ https://github.com/atusy/lua-filters/blob/master/lua/arrange-footnotes.lua
 ]]
 function Meta(meta)
   sep = pandoc.Superscript(
-    meta['sep-footnotes'] and (
-      pandoc.utils.stringify(meta['sep-footnotes'])
-    ) or ', '
+    meta['sep-footnotes'] or {pandoc.Str(','), pandoc.Space()}
   )
 end
 
