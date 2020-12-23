@@ -30,9 +30,7 @@ local attributes_free_formats = {
 local full_attributes = attributes_free_formats[FORMAT] == nil
 local section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
 local n_section_number_table = #section_number_table
-local decorations = {
-  '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 
-}
+local decorations = {'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'}
 local previous_header_level = 0
 local separator = pandoc.Space()
 if FORMAT == "docx" then -- to be consistent with Pandoc >= 2.10.1
