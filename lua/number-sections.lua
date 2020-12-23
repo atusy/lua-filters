@@ -30,6 +30,9 @@ local attributes_free_formats = {
 local full_attributes = attributes_free_formats[FORMAT] == nil
 local section_number_table = {0, 0, 0, 0, 0, 0, 0, 0, 0}
 local n_section_number_table = #section_number_table
+local decorations = {
+  '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 
+}
 local previous_header_level = 0
 local separator = pandoc.Space()
 if FORMAT == "docx" then -- to be consistent with Pandoc >= 2.10.1
@@ -39,6 +42,12 @@ end
 local function Meta(meta)
   if meta.number_sections_with_attributes then
     full_attributes = meta.number_sections_with_attributes
+  end
+
+  if meta.number_sections_with_decorations then
+    for i,v in ipairs(meta.number_sections_with_decorations) do
+      decorations[i] = pandoc.utils.stringify(v)
+    end
   end
 end
 
@@ -68,6 +77,7 @@ local function Header(elem)
       section_number_string = section_number_table[i] .. "." .. section_number_string
     end
   end
+  section_number_string = string.format(decorations[elem.level], section_number_string)
 
   --- Update Header element
   table.insert(elem.content, 1, separator)
