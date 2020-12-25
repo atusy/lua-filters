@@ -38,8 +38,11 @@ if FORMAT == "docx" then -- to be consistent with Pandoc >= 2.10.1
 end
 
 local function Meta(meta)
-  if meta.number_offset then
-    section_number_table[1] = tonumber(pandoc.utils.stringify(meta.number_offset)) - 1
+  local offset = meta.number_offset
+  if offset then
+    section_number_table[1] = tonumber(
+        (type(offset) == "table") and (pandoc.utils.stringify(offset)) or offset
+      ) - 1
   end
 
   if meta.number_sections_with_attributes then
