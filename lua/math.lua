@@ -15,6 +15,8 @@ https://github.com/atusy/lua-filters/blob/master/lua/math.lua
 ]]
 local cmd = "pandoc"
 
+local pandoc2_9_x = (PANDOC_VERSION[1] == 2) and (PANDOC_VERSION[2] == 9)
+
 local function Meta(elem)
   if elem["pandoc-path"] ~= nil then
     cmd = pandoc.utils.stringify(elem["pandoc-path"])
@@ -22,13 +24,24 @@ local function Meta(elem)
 end
 
 local function Math(elem)
+  local is_display = elem.mathtype == "DisplayMath"
   local text = "$" .. elem.text .. "$"
-  if elem.mathtype == "DisplayMath" then
+
+  if is_display then
     text = "$" .. text .. "$"
   end
-  return pandoc.read(
+
+  local math = pandoc.read(
     pandoc.pipe(cmd, {"-t", "html", "-f", "markdown"}, text), "html"
   ).blocks[1].content
+
+  if (is_display and pandoc2_9_x) then
+    -- remove linebreaks at the beggining and the end
+    table.remove(math, 1)
+    table.remove(math, #math)
+  end
+
+  return math
 end
 
 return {
