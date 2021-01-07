@@ -12,9 +12,12 @@ name: Pandoc
 jobs:
   Pandoc:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pandoc: ['2.7.3', '2.9.2.1', '2.10.1', '2.11.3.2']
     steps:
     - uses: actions/checkout@master
     - uses: r-lib/actions/setup-pandoc@v1
       with:
-        pandoc-version: '2.7.3' # The pandoc version to download (if necessary) and use.
+        pandoc-version: ${{ matrix.pandoc }}
     - run: bash test/test.sh
