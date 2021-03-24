@@ -3,19 +3,6 @@ bookdown-reference-text - Reference text feature inspired by 'bookdown'
 
 cf. https://github.com/rstudio/bookdown/
 
----
-crossref:
-  labels:
-    fig: "Fig. "
-    tab: "Tab. "
-    eq: "Eqn. "
-  link: true
-  number_sections: false # TODO: NOT WORKING!!
----
-
-In case `number_sections: true`, and using HTML/EPUB,
-`--number-sections` (or the `-N`) option should also be enabled.
-
 # MIT License
 
 Copyright (c) 2020 Atsushi Yasumoto
