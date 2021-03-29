@@ -44,9 +44,9 @@ local index = {}
 
 local patterns = {
     ref = "(@ref%(([%a%d-]+):([%a%d-]+)%))",
-    ref_escaped = "(\\@ref\\%(([%a%d-]+):([%a%d-]+)\\%))",
+    ref_escaped = "(@ref\\%(([%a%d-]+):([%a%d-]+)\\%))",
     ref_section = "(@ref%(([%a%d-]+)%))",
-    ref_section_escaped = "(\\@ref\\%(([%a%d-]+)\\%))",
+    ref_section_escaped = "(@ref\\%(([%a%d-]+)\\%))",
     hash = "(%(#([%a%d-]+):([%a%d-]+)%))",
     hash_escaped = "(\\%(\\#([%a%d-]+):([%a%d-]+)\\%))"
 }
