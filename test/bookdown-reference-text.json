@@ -1,0 +1,1 @@
+{"meta":{},"blocks":[{"t":"Para","c":[{"t":"Str","c":"1:"},{"t":"Space"},{"t":"Str","c":"foo"}]},{"t":"Para","c":[{"t":"Str","c":"1"},{"t":"Space"},{"t":"Str","c":"and"},{"t":"Space"},{"t":"Str","c":"2:"},{"t":"Space"},{"t":"Str","c":"foo"},{"t":"Str","c":"bar"}]},{"t":"Para","c":[{"t":"Str","c":"3:"},{"t":"Space"},{"t":"Str","c":"foo"},{"t":"SoftBreak"},{"t":"Str","c":"bar"}]}]}

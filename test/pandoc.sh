@@ -6,20 +6,14 @@ fi
 GITDIR=$(git rev-parse --show-toplevel)
 cd "${GITDIR}" || exit 1
 
-if [ "$1" == "" ]
-then
-  ext="html"
-else
-  ext="$1"
-fi;
+OUTPUT_FORMAT="${1:-json}"; shift
+OUTPUT_EXT="${2:-${OUTPUT_FORMAT}}"; shift
 
 find test -name '*.md' | while read -r md; do
-  hs="${md%md}hs"
   lua_filter=$(echo "$md" | sed s/^test/lua/ | sed s/md$/lua/)
-  pandoc "$md" -L "$lua_filter" -t native -o "$hs"
-  if [ "$ext" != "native" ]
-  then
-    output="${md%md}${ext}"
-    pandoc "$md" -L "$lua_filter" -t "$ext" -o "$output" --standalone --metadata title="$md"
-  fi;
+  if [[ "$OUTPUT_FORMAT" == "json" ]]; then
+    pandoc "$md" -t "$OUTPUT_FORMAT" -L "$lua_filter" "$@" | jq -c 'del(.["pandoc-api-version"])' > "${md%md}${OUTPUT_EXT}"
+  else
+    pandoc "$md" -t "$OUTPUT_FORMAT" -L "$lua_filter" -o "${md%md}${OUTPUT_EXT}" "$@"
+  fi
 done
