@@ -1,9 +1,13 @@
 #! /bin/bash
 
 stashed=$(git stash)
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
-cd $SCRIPT_DIR
-cd ..
+
+if ! git rev-parse --is-inside-git-dir > /dev/null; then
+  exit 1
+fi
+
+GITDIR=$(git rev-parse --show-toplevel)
+cd "${GITDIR}" || exit 1
 
 function postprocess() {
   git reset --hard --quiet
