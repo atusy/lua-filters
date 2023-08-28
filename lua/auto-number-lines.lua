@@ -12,25 +12,19 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ]]
 
-local function CodeBlock(code)
-  local _, index = code.classes:find('un-numberLines')
+function CodeBlock(code)
+  local _, index = code.classes:find("un-numberLines")
   if index then
     local classes = {}
-    for i,j in ipairs(code.classes) do
-      if i ~= idex then
+    for i, j in ipairs(code.classes) do
+      if i ~= index then
         table.insert(classes, j)
       end
     end
     code.classes = classes
-    return(code)
+    return code
   end
 
-  code.classes[#code.classes+1] = 'numberLines'
-  return(code)
+  code.classes[#code.classes + 1] = "numberLines"
+  return code
 end
-
-number_lines_code_blocks = {
-  { CodeBlock = CodeBlock }
-}
-
-return number_lines_code_blocks
