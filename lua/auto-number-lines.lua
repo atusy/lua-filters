@@ -13,18 +13,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ]]
 
 function CodeBlock(code)
-  local _, index = code.classes:find("un-numberLines")
-  if index then
-    local classes = {}
-    for i, j in ipairs(code.classes) do
-      if i ~= index then
-        table.insert(classes, j)
-      end
-    end
-    code.classes = classes
-    return code
+  local _, index = code.classes:find("no-numberLines")
+  if not index then
+    table.insert(code.classes, "numberLines")
   end
-
-  code.classes[#code.classes + 1] = "numberLines"
   return code
 end
