@@ -7,7 +7,7 @@ GITDIR=$(git rev-parse --show-toplevel)
 cd "${GITDIR}" || exit 1
 
 OUTPUT_FORMAT="${1:-json}"; shift
-OUTPUT_EXT="${2:-${OUTPUT_FORMAT}}"; shift
+OUTPUT_EXT="${1:-${OUTPUT_FORMAT}}"; shift
 
 find test -name '*.md' | while read -r md; do
   lua_filter=$(echo "$md" | sed s/^test/lua/ | sed s/md$/lua/)
