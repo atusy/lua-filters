@@ -1,6 +1,0 @@
-[Header 1 ("is-1",[],[("data-number","1")]) [Span ("",["header-section-number"],[]) [Str "1"],Space,Str "is",Space,Str "1"]
-,Header 2 ("is-1.1",[],[("data-number","1.1")]) [Span ("",["header-section-number"],[]) [Str "1.1"],Space,Str "is",Space,Str "1.1"]
-,Header 1 ("is-not-numbered",["unnumbered"],[("data-number","")]) [Str "is",Space,Str "not",Space,Str "numbered"]
-,Header 1 ("is-2",[],[("data-number","2")]) [Span ("",["header-section-number"],[]) [Str "2"],Space,Str "is",Space,Str "2"]
-,Header 2 ("is-2.1",[],[("data-number","2.1")]) [Span ("",["header-section-number"],[]) [Str "2.1"],Space,Str "is",Space,Str "2.1"]
-,Header 2 ("is-2.2",[],[("data-number","2.2")]) [Span ("",["header-section-number"],[]) [Str "2.2"],Space,Str "is",Space,Str "2.2"]]
